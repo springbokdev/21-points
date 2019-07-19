@@ -1,0 +1,40 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "space.springbok.health",
+      "nativeLanguage": "en"
+    },
+    "jhipsterVersion": "6.1.2",
+    "applicationType": "monolith",
+    "baseName": "TwentyOnePoints",
+    "packageName": "space.springbok.health",
+    "packageFolder": "space/springbok/health",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": "elasticsearch",
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "gradle",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "ZWI5MTI1MWY5N2FhOGE3NTlkNmU0M2M5ZjZjOTg2ZTI3MzhhYjE3YmYyNmQ5NThlM2RhYWVmMWNlYmJmYWJkZDUyMjE2ZTU0NzA4ZjY1ZDdmZjM2MzZlNGExM2Y5ZjFlODgyZGY5MGVkYWNmMjNmYjNmMDI3NzAwMGQ0Y2JlM2I=",
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "clientFramework": "angularX",
+    "clientTheme": "none",
+    "clientThemeVariant": "",
+    "testFrameworks": ["gatling", "protractor"],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "nativeLanguage": "en",
+    "languages": ["en", "nl"]
+  }
+}
