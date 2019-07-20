@@ -1,0 +1,28 @@
+{
+  "twentyOnePointsApp": {
+    "points": {
+      "home": {
+        "title": "Points",
+        "createLabel": "Maak een nieuwe Points",
+        "createOrEditLabel": "Maak of wijzig een Points",
+        "search": "Search for Points",
+        "notFound": "No Points found"
+      },
+      "created": "A new Points is created with identifier {{ param }}",
+      "updated": "A Points is updated with identifier {{ param }}",
+      "deleted": "A Points is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Bent u zeker dat u Points {{ id }} wilt verwijderen?"
+      },
+      "detail": {
+        "title": "Points"
+      },
+      "date": "Date",
+      "exercise": "Exercise",
+      "meals": "Meals",
+      "alcohol": "Alcohol",
+      "notes": "Notes",
+      "user": "User"
+    }
+  }
+}

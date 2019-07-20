@@ -1,0 +1,26 @@
+{
+  "twentyOnePointsApp": {
+    "bloodpressure": {
+      "home": {
+        "title": "Bloodpressures",
+        "createLabel": "Maak een nieuwe Bloodpressure",
+        "createOrEditLabel": "Maak of wijzig een Bloodpressure",
+        "search": "Search for Bloodpressure",
+        "notFound": "No Bloodpressure found"
+      },
+      "created": "A new Bloodpressure is created with identifier {{ param }}",
+      "updated": "A Bloodpressure is updated with identifier {{ param }}",
+      "deleted": "A Bloodpressure is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Bent u zeker dat u Bloodpressure {{ id }} wilt verwijderen?"
+      },
+      "detail": {
+        "title": "Bloodpressure"
+      },
+      "timestamp": "Timestamp",
+      "systolic": "Systolic",
+      "diastolic": "Diastolic",
+      "user": "User"
+    }
+  }
+}

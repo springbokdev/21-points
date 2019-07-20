@@ -43,6 +43,10 @@ public class CacheConfiguration {
             createCache(cm, space.springbok.health.domain.User.class.getName());
             createCache(cm, space.springbok.health.domain.Authority.class.getName());
             createCache(cm, space.springbok.health.domain.User.class.getName() + ".authorities");
+            createCache(cm, space.springbok.health.domain.Points.class.getName());
+            createCache(cm, space.springbok.health.domain.Weight.class.getName());
+            createCache(cm, space.springbok.health.domain.Bloodpressure.class.getName());
+            createCache(cm, space.springbok.health.domain.Preferences.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

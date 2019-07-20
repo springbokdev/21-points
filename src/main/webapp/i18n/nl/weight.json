@@ -1,0 +1,25 @@
+{
+  "twentyOnePointsApp": {
+    "weight": {
+      "home": {
+        "title": "Weights",
+        "createLabel": "Maak een nieuwe Weight",
+        "createOrEditLabel": "Maak of wijzig een Weight",
+        "search": "Search for Weight",
+        "notFound": "No Weight found"
+      },
+      "created": "A new Weight is created with identifier {{ param }}",
+      "updated": "A Weight is updated with identifier {{ param }}",
+      "deleted": "A Weight is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Bent u zeker dat u Weight {{ id }} wilt verwijderen?"
+      },
+      "detail": {
+        "title": "Weight"
+      },
+      "timestamp": "Timestamp",
+      "weight": "Weight",
+      "user": "User"
+    }
+  }
+}
