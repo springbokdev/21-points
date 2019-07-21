@@ -3,11 +3,11 @@ import { IUser } from 'app/core/user/user.model';
 
 export interface IWeight {
   id?: number;
-  timestamp?: Moment;
   weight?: number;
+  timestamp?: Moment;
   user?: IUser;
 }
 
 export class Weight implements IWeight {
-  constructor(public id?: number, public timestamp?: Moment, public weight?: number, public user?: IUser) {}
+  constructor(public id?: number, public weight?: number, public timestamp?: Moment, public user?: IUser) {}
 }

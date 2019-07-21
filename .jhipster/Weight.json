@@ -13,12 +13,15 @@
     ],
     "fields": [
         {
-            "fieldName": "timestamp",
-            "fieldType": "LocalDate"
-        },
-        {
             "fieldName": "weight",
             "fieldType": "Integer"
+        },
+        {
+            "fieldName": "timestamp",
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": [
+                "required"
+            ]
         }
     ],
     "changelogDate": "20190720132812",

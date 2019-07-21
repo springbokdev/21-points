@@ -3,12 +3,12 @@ import { IUser } from 'app/core/user/user.model';
 
 export interface IBloodpressure {
   id?: number;
-  timestamp?: Moment;
   systolic?: number;
   diastolic?: number;
+  timestamp?: Moment;
   user?: IUser;
 }
 
 export class Bloodpressure implements IBloodpressure {
-  constructor(public id?: number, public timestamp?: Moment, public systolic?: number, public diastolic?: number, public user?: IUser) {}
+  constructor(public id?: number, public systolic?: number, public diastolic?: number, public timestamp?: Moment, public user?: IUser) {}
 }

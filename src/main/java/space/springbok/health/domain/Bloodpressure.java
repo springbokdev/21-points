@@ -4,10 +4,11 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 /**
  * A Bloodpressure.
@@ -26,14 +27,15 @@ public class Bloodpressure implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = FieldType.Keyword)
     private Long id;
 
-    @Column(name = "timestamp")
-    private LocalDate timestamp;
-
     @Column(name = "systolic")
     private Integer systolic;
 
     @Column(name = "diastolic")
     private Integer diastolic;
+
+    @NotNull
+    @Column(name = "timestamp", nullable = false)
+    private ZonedDateTime timestamp;
 
     @ManyToOne
     @JsonIgnoreProperties("bloodpressures")
@@ -46,19 +48,6 @@ public class Bloodpressure implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDate getTimestamp() {
-        return timestamp;
-    }
-
-    public Bloodpressure timestamp(LocalDate timestamp) {
-        this.timestamp = timestamp;
-        return this;
-    }
-
-    public void setTimestamp(LocalDate timestamp) {
-        this.timestamp = timestamp;
     }
 
     public Integer getSystolic() {
@@ -85,6 +74,19 @@ public class Bloodpressure implements Serializable {
 
     public void setDiastolic(Integer diastolic) {
         this.diastolic = diastolic;
+    }
+
+    public ZonedDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public Bloodpressure timestamp(ZonedDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    public void setTimestamp(ZonedDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     public User getUser() {
@@ -121,9 +123,9 @@ public class Bloodpressure implements Serializable {
     public String toString() {
         return "Bloodpressure{" +
             "id=" + getId() +
-            ", timestamp='" + getTimestamp() + "'" +
             ", systolic=" + getSystolic() +
             ", diastolic=" + getDiastolic() +
+            ", timestamp='" + getTimestamp() + "'" +
             "}";
     }
 }

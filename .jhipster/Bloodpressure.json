@@ -13,16 +13,19 @@
     ],
     "fields": [
         {
-            "fieldName": "timestamp",
-            "fieldType": "LocalDate"
-        },
-        {
             "fieldName": "systolic",
             "fieldType": "Integer"
         },
         {
             "fieldName": "diastolic",
             "fieldType": "Integer"
+        },
+        {
+            "fieldName": "timestamp",
+            "fieldType": "ZonedDateTime",
+            "fieldValidateRules": [
+                "required"
+            ]
         }
     ],
     "changelogDate": "20190720133621",

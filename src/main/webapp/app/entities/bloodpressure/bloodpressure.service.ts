@@ -59,7 +59,7 @@ export class BloodpressureService {
 
   protected convertDateFromClient(bloodpressure: IBloodpressure): IBloodpressure {
     const copy: IBloodpressure = Object.assign({}, bloodpressure, {
-      timestamp: bloodpressure.timestamp != null && bloodpressure.timestamp.isValid() ? bloodpressure.timestamp.format(DATE_FORMAT) : null
+      timestamp: bloodpressure.timestamp != null && bloodpressure.timestamp.isValid() ? bloodpressure.timestamp.toJSON() : null
     });
     return copy;
   }

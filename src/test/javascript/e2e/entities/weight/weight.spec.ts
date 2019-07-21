@@ -1,5 +1,5 @@
 /* tslint:disable no-unused-expression */
-import { browser, ExpectedConditions as ec, promise } from 'protractor';
+import { browser, ExpectedConditions as ec, protractor, promise } from 'protractor';
 import { NavBarPage, SignInPage } from '../../page-objects/jhi-page-objects';
 
 import { WeightComponentsPage, WeightDeleteDialog, WeightUpdatePage } from './weight.page-object';
@@ -40,12 +40,15 @@ describe('Weight e2e test', () => {
 
     await weightComponentsPage.clickOnCreateButton();
     await promise.all([
-      weightUpdatePage.setTimestampInput('2000-12-31'),
       weightUpdatePage.setWeightInput('5'),
+      weightUpdatePage.setTimestampInput('01/01/2001' + protractor.Key.TAB + '02:30AM'),
       weightUpdatePage.userSelectLastOption()
     ]);
-    expect(await weightUpdatePage.getTimestampInput()).to.eq('2000-12-31', 'Expected timestamp value to be equals to 2000-12-31');
     expect(await weightUpdatePage.getWeightInput()).to.eq('5', 'Expected weight value to be equals to 5');
+    expect(await weightUpdatePage.getTimestampInput()).to.contain(
+      '2001-01-01T02:30',
+      'Expected timestamp value to be equals to 2000-12-31'
+    );
     await weightUpdatePage.save();
     expect(await weightUpdatePage.getSaveButton().isPresent(), 'Expected save button disappear').to.be.false;
 

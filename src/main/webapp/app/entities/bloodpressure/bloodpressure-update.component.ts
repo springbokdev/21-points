@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import * as moment from 'moment';
+import { DATE_TIME_FORMAT } from 'app/shared/constants/input.constants';
 import { JhiAlertService } from 'ng-jhipster';
 import { IBloodpressure, Bloodpressure } from 'app/shared/model/bloodpressure.model';
 import { BloodpressureService } from './bloodpressure.service';
@@ -18,13 +19,12 @@ export class BloodpressureUpdateComponent implements OnInit {
   isSaving: boolean;
 
   users: IUser[];
-  timestampDp: any;
 
   editForm = this.fb.group({
     id: [],
-    timestamp: [],
     systolic: [],
     diastolic: [],
+    timestamp: [null, [Validators.required]],
     user: []
   });
 
@@ -53,9 +53,9 @@ export class BloodpressureUpdateComponent implements OnInit {
   updateForm(bloodpressure: IBloodpressure) {
     this.editForm.patchValue({
       id: bloodpressure.id,
-      timestamp: bloodpressure.timestamp,
       systolic: bloodpressure.systolic,
       diastolic: bloodpressure.diastolic,
+      timestamp: bloodpressure.timestamp != null ? bloodpressure.timestamp.format(DATE_TIME_FORMAT) : null,
       user: bloodpressure.user
     });
   }
@@ -78,9 +78,10 @@ export class BloodpressureUpdateComponent implements OnInit {
     return {
       ...new Bloodpressure(),
       id: this.editForm.get(['id']).value,
-      timestamp: this.editForm.get(['timestamp']).value,
       systolic: this.editForm.get(['systolic']).value,
       diastolic: this.editForm.get(['diastolic']).value,
+      timestamp:
+        this.editForm.get(['timestamp']).value != null ? moment(this.editForm.get(['timestamp']).value, DATE_TIME_FORMAT) : undefined,
       user: this.editForm.get(['user']).value
     };
   }

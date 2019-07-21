@@ -59,7 +59,7 @@ export class WeightService {
 
   protected convertDateFromClient(weight: IWeight): IWeight {
     const copy: IWeight = Object.assign({}, weight, {
-      timestamp: weight.timestamp != null && weight.timestamp.isValid() ? weight.timestamp.format(DATE_FORMAT) : null
+      timestamp: weight.timestamp != null && weight.timestamp.isValid() ? weight.timestamp.toJSON() : null
     });
     return copy;
   }

@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -61,7 +62,7 @@ public class BloodpressureResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/bloodpressures")
-    public ResponseEntity<Bloodpressure> createBloodpressure(@RequestBody Bloodpressure bloodpressure) throws URISyntaxException {
+    public ResponseEntity<Bloodpressure> createBloodpressure(@Valid @RequestBody Bloodpressure bloodpressure) throws URISyntaxException {
         log.debug("REST request to save Bloodpressure : {}", bloodpressure);
         if (bloodpressure.getId() != null) {
             throw new BadRequestAlertException("A new bloodpressure cannot already have an ID", ENTITY_NAME, "idexists");
@@ -83,7 +84,7 @@ public class BloodpressureResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/bloodpressures")
-    public ResponseEntity<Bloodpressure> updateBloodpressure(@RequestBody Bloodpressure bloodpressure) throws URISyntaxException {
+    public ResponseEntity<Bloodpressure> updateBloodpressure(@Valid @RequestBody Bloodpressure bloodpressure) throws URISyntaxException {
         log.debug("REST request to update Bloodpressure : {}", bloodpressure);
         if (bloodpressure.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");

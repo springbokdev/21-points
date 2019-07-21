@@ -22,11 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Validator;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
+import static space.springbok.health.web.rest.TestUtil.sameInstant;
 import static space.springbok.health.web.rest.TestUtil.createFormattingConversionService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
@@ -41,14 +44,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = TwentyOnePointsApp.class)
 public class BloodpressureResourceIT {
 
-    private static final LocalDate DEFAULT_TIMESTAMP = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_TIMESTAMP = LocalDate.now(ZoneId.systemDefault());
-
     private static final Integer DEFAULT_SYSTOLIC = 1;
     private static final Integer UPDATED_SYSTOLIC = 2;
 
     private static final Integer DEFAULT_DIASTOLIC = 1;
     private static final Integer UPDATED_DIASTOLIC = 2;
+
+    private static final ZonedDateTime DEFAULT_TIMESTAMP = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
+    private static final ZonedDateTime UPDATED_TIMESTAMP = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
 
     @Autowired
     private BloodpressureRepository bloodpressureRepository;
@@ -100,9 +103,9 @@ public class BloodpressureResourceIT {
      */
     public static Bloodpressure createEntity(EntityManager em) {
         Bloodpressure bloodpressure = new Bloodpressure()
-            .timestamp(DEFAULT_TIMESTAMP)
             .systolic(DEFAULT_SYSTOLIC)
-            .diastolic(DEFAULT_DIASTOLIC);
+            .diastolic(DEFAULT_DIASTOLIC)
+            .timestamp(DEFAULT_TIMESTAMP);
         return bloodpressure;
     }
     /**
@@ -113,9 +116,9 @@ public class BloodpressureResourceIT {
      */
     public static Bloodpressure createUpdatedEntity(EntityManager em) {
         Bloodpressure bloodpressure = new Bloodpressure()
-            .timestamp(UPDATED_TIMESTAMP)
             .systolic(UPDATED_SYSTOLIC)
-            .diastolic(UPDATED_DIASTOLIC);
+            .diastolic(UPDATED_DIASTOLIC)
+            .timestamp(UPDATED_TIMESTAMP);
         return bloodpressure;
     }
 
@@ -139,9 +142,9 @@ public class BloodpressureResourceIT {
         List<Bloodpressure> bloodpressureList = bloodpressureRepository.findAll();
         assertThat(bloodpressureList).hasSize(databaseSizeBeforeCreate + 1);
         Bloodpressure testBloodpressure = bloodpressureList.get(bloodpressureList.size() - 1);
-        assertThat(testBloodpressure.getTimestamp()).isEqualTo(DEFAULT_TIMESTAMP);
         assertThat(testBloodpressure.getSystolic()).isEqualTo(DEFAULT_SYSTOLIC);
         assertThat(testBloodpressure.getDiastolic()).isEqualTo(DEFAULT_DIASTOLIC);
+        assertThat(testBloodpressure.getTimestamp()).isEqualTo(DEFAULT_TIMESTAMP);
 
         // Validate the Bloodpressure in Elasticsearch
         verify(mockBloodpressureSearchRepository, times(1)).save(testBloodpressure);
@@ -172,6 +175,24 @@ public class BloodpressureResourceIT {
 
     @Test
     @Transactional
+    public void checkTimestampIsRequired() throws Exception {
+        int databaseSizeBeforeTest = bloodpressureRepository.findAll().size();
+        // set the field null
+        bloodpressure.setTimestamp(null);
+
+        // Create the Bloodpressure, which fails.
+
+        restBloodpressureMockMvc.perform(post("/api/bloodpressures")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(bloodpressure)))
+            .andExpect(status().isBadRequest());
+
+        List<Bloodpressure> bloodpressureList = bloodpressureRepository.findAll();
+        assertThat(bloodpressureList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     public void getAllBloodpressures() throws Exception {
         // Initialize the database
         bloodpressureRepository.saveAndFlush(bloodpressure);
@@ -181,9 +202,9 @@ public class BloodpressureResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(bloodpressure.getId().intValue())))
-            .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].systolic").value(hasItem(DEFAULT_SYSTOLIC)))
-            .andExpect(jsonPath("$.[*].diastolic").value(hasItem(DEFAULT_DIASTOLIC)));
+            .andExpect(jsonPath("$.[*].diastolic").value(hasItem(DEFAULT_DIASTOLIC)))
+            .andExpect(jsonPath("$.[*].timestamp").value(hasItem(sameInstant(DEFAULT_TIMESTAMP))));
     }
     
     @Test
@@ -197,9 +218,9 @@ public class BloodpressureResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(bloodpressure.getId().intValue()))
-            .andExpect(jsonPath("$.timestamp").value(DEFAULT_TIMESTAMP.toString()))
             .andExpect(jsonPath("$.systolic").value(DEFAULT_SYSTOLIC))
-            .andExpect(jsonPath("$.diastolic").value(DEFAULT_DIASTOLIC));
+            .andExpect(jsonPath("$.diastolic").value(DEFAULT_DIASTOLIC))
+            .andExpect(jsonPath("$.timestamp").value(sameInstant(DEFAULT_TIMESTAMP)));
     }
 
     @Test
@@ -223,9 +244,9 @@ public class BloodpressureResourceIT {
         // Disconnect from session so that the updates on updatedBloodpressure are not directly saved in db
         em.detach(updatedBloodpressure);
         updatedBloodpressure
-            .timestamp(UPDATED_TIMESTAMP)
             .systolic(UPDATED_SYSTOLIC)
-            .diastolic(UPDATED_DIASTOLIC);
+            .diastolic(UPDATED_DIASTOLIC)
+            .timestamp(UPDATED_TIMESTAMP);
 
         restBloodpressureMockMvc.perform(put("/api/bloodpressures")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -236,9 +257,9 @@ public class BloodpressureResourceIT {
         List<Bloodpressure> bloodpressureList = bloodpressureRepository.findAll();
         assertThat(bloodpressureList).hasSize(databaseSizeBeforeUpdate);
         Bloodpressure testBloodpressure = bloodpressureList.get(bloodpressureList.size() - 1);
-        assertThat(testBloodpressure.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
         assertThat(testBloodpressure.getSystolic()).isEqualTo(UPDATED_SYSTOLIC);
         assertThat(testBloodpressure.getDiastolic()).isEqualTo(UPDATED_DIASTOLIC);
+        assertThat(testBloodpressure.getTimestamp()).isEqualTo(UPDATED_TIMESTAMP);
 
         // Validate the Bloodpressure in Elasticsearch
         verify(mockBloodpressureSearchRepository, times(1)).save(testBloodpressure);
@@ -298,9 +319,9 @@ public class BloodpressureResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(bloodpressure.getId().intValue())))
-            .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].systolic").value(hasItem(DEFAULT_SYSTOLIC)))
-            .andExpect(jsonPath("$.[*].diastolic").value(hasItem(DEFAULT_DIASTOLIC)));
+            .andExpect(jsonPath("$.[*].diastolic").value(hasItem(DEFAULT_DIASTOLIC)))
+            .andExpect(jsonPath("$.[*].timestamp").value(hasItem(sameInstant(DEFAULT_TIMESTAMP))));
     }
 
     @Test

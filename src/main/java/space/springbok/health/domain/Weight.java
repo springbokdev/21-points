@@ -4,10 +4,11 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 /**
  * A Weight.
@@ -26,11 +27,12 @@ public class Weight implements Serializable {
     @org.springframework.data.elasticsearch.annotations.Field(type = FieldType.Keyword)
     private Long id;
 
-    @Column(name = "timestamp")
-    private LocalDate timestamp;
-
     @Column(name = "weight")
     private Integer weight;
+
+    @NotNull
+    @Column(name = "timestamp", nullable = false)
+    private ZonedDateTime timestamp;
 
     @ManyToOne
     @JsonIgnoreProperties("weights")
@@ -45,19 +47,6 @@ public class Weight implements Serializable {
         this.id = id;
     }
 
-    public LocalDate getTimestamp() {
-        return timestamp;
-    }
-
-    public Weight timestamp(LocalDate timestamp) {
-        this.timestamp = timestamp;
-        return this;
-    }
-
-    public void setTimestamp(LocalDate timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public Integer getWeight() {
         return weight;
     }
@@ -69,6 +58,19 @@ public class Weight implements Serializable {
 
     public void setWeight(Integer weight) {
         this.weight = weight;
+    }
+
+    public ZonedDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public Weight timestamp(ZonedDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    public void setTimestamp(ZonedDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     public User getUser() {
@@ -105,8 +107,8 @@ public class Weight implements Serializable {
     public String toString() {
         return "Weight{" +
             "id=" + getId() +
-            ", timestamp='" + getTimestamp() + "'" +
             ", weight=" + getWeight() +
+            ", timestamp='" + getTimestamp() + "'" +
             "}";
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -61,7 +62,7 @@ public class WeightResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/weights")
-    public ResponseEntity<Weight> createWeight(@RequestBody Weight weight) throws URISyntaxException {
+    public ResponseEntity<Weight> createWeight(@Valid @RequestBody Weight weight) throws URISyntaxException {
         log.debug("REST request to save Weight : {}", weight);
         if (weight.getId() != null) {
             throw new BadRequestAlertException("A new weight cannot already have an ID", ENTITY_NAME, "idexists");
@@ -83,7 +84,7 @@ public class WeightResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/weights")
-    public ResponseEntity<Weight> updateWeight(@RequestBody Weight weight) throws URISyntaxException {
+    public ResponseEntity<Weight> updateWeight(@Valid @RequestBody Weight weight) throws URISyntaxException {
         log.debug("REST request to update Weight : {}", weight);
         if (weight.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");

@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import * as moment from 'moment';
+import { DATE_TIME_FORMAT } from 'app/shared/constants/input.constants';
 import { JhiAlertService } from 'ng-jhipster';
 import { IWeight, Weight } from 'app/shared/model/weight.model';
 import { WeightService } from './weight.service';
@@ -18,12 +19,11 @@ export class WeightUpdateComponent implements OnInit {
   isSaving: boolean;
 
   users: IUser[];
-  timestampDp: any;
 
   editForm = this.fb.group({
     id: [],
-    timestamp: [],
     weight: [],
+    timestamp: [null, [Validators.required]],
     user: []
   });
 
@@ -52,8 +52,8 @@ export class WeightUpdateComponent implements OnInit {
   updateForm(weight: IWeight) {
     this.editForm.patchValue({
       id: weight.id,
-      timestamp: weight.timestamp,
       weight: weight.weight,
+      timestamp: weight.timestamp != null ? weight.timestamp.format(DATE_TIME_FORMAT) : null,
       user: weight.user
     });
   }
@@ -76,8 +76,9 @@ export class WeightUpdateComponent implements OnInit {
     return {
       ...new Weight(),
       id: this.editForm.get(['id']).value,
-      timestamp: this.editForm.get(['timestamp']).value,
       weight: this.editForm.get(['weight']).value,
+      timestamp:
+        this.editForm.get(['timestamp']).value != null ? moment(this.editForm.get(['timestamp']).value, DATE_TIME_FORMAT) : undefined,
       user: this.editForm.get(['user']).value
     };
   }

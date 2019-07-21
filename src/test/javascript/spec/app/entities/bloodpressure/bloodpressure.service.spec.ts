@@ -5,7 +5,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { of } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import * as moment from 'moment';
-import { DATE_FORMAT } from 'app/shared/constants/input.constants';
+import { DATE_TIME_FORMAT } from 'app/shared/constants/input.constants';
 import { BloodpressureService } from 'app/entities/bloodpressure/bloodpressure.service';
 import { IBloodpressure, Bloodpressure } from 'app/shared/model/bloodpressure.model';
 
@@ -27,14 +27,14 @@ describe('Service Tests', () => {
       httpMock = injector.get(HttpTestingController);
       currentDate = moment();
 
-      elemDefault = new Bloodpressure(0, currentDate, 0, 0);
+      elemDefault = new Bloodpressure(0, 0, 0, currentDate);
     });
 
     describe('Service methods', () => {
       it('should find an element', async () => {
         const returnedFromService = Object.assign(
           {
-            timestamp: currentDate.format(DATE_FORMAT)
+            timestamp: currentDate.format(DATE_TIME_FORMAT)
           },
           elemDefault
         );
@@ -52,7 +52,7 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             id: 0,
-            timestamp: currentDate.format(DATE_FORMAT)
+            timestamp: currentDate.format(DATE_TIME_FORMAT)
           },
           elemDefault
         );
@@ -74,9 +74,9 @@ describe('Service Tests', () => {
       it('should update a Bloodpressure', async () => {
         const returnedFromService = Object.assign(
           {
-            timestamp: currentDate.format(DATE_FORMAT),
             systolic: 1,
-            diastolic: 1
+            diastolic: 1,
+            timestamp: currentDate.format(DATE_TIME_FORMAT)
           },
           elemDefault
         );
@@ -99,9 +99,9 @@ describe('Service Tests', () => {
       it('should return a list of Bloodpressure', async () => {
         const returnedFromService = Object.assign(
           {
-            timestamp: currentDate.format(DATE_FORMAT),
             systolic: 1,
-            diastolic: 1
+            diastolic: 1,
+            timestamp: currentDate.format(DATE_TIME_FORMAT)
           },
           elemDefault
         );
