@@ -32,6 +32,8 @@ import java.util.stream.StreamSupport;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
+ * TODO change this class according to page 32
+ *
  * REST controller for managing {@link space.springbok.health.domain.Points}.
  */
 @RestController
