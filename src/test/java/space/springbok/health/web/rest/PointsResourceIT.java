@@ -1,8 +1,18 @@
 package space.springbok.health.web.rest;
 
+import space.springbok.health.domain.User;
+import org.springframework.web.context.WebApplicationContext;
+import java.time.DayOfWeek;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+
+import org.springframework.web.context.WebApplicationContext;
 import space.springbok.health.TwentyOnePointsApp;
 import space.springbok.health.domain.Points;
 import space.springbok.health.repository.PointsRepository;
+import space.springbok.health.repository.UserRepository;
 import space.springbok.health.repository.search.PointsSearchRepository;
 import space.springbok.health.web.rest.errors.ExceptionTranslator;
 
@@ -35,6 +45,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+
 /**
  * Integration tests for the {@Link PointsResource} REST controller.
  */
@@ -58,6 +70,12 @@ public class PointsResourceIT {
 
     @Autowired
     private PointsRepository pointsRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private WebApplicationContext context;
 
     /**
      * This repository is mocked in the space.springbok.health.repository.search test package.
@@ -89,7 +107,7 @@ public class PointsResourceIT {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final PointsResource pointsResource = new PointsResource(pointsRepository, mockPointsSearchRepository);
+        final PointsResource pointsResource = new PointsResource(pointsRepository, mockPointsSearchRepository, userRepository);
         this.restPointsMockMvc = MockMvcBuilders.standaloneSetup(pointsResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
@@ -139,8 +157,12 @@ public class PointsResourceIT {
     public void createPoints() throws Exception {
         int databaseSizeBeforeCreate = pointsRepository.findAll().size();
 
+        // Create security-aware mockMvc
+        restPointsMockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+
         // Create the Points
         restPointsMockMvc.perform(post("/api/points")
+            .with(user("user"))
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(points)))
             .andExpect(status().isCreated());
@@ -217,7 +239,7 @@ public class PointsResourceIT {
             .andExpect(jsonPath("$.[*].alcohol").value(hasItem(DEFAULT_ALCOHOL)))
             .andExpect(jsonPath("$.[*].notes").value(hasItem(DEFAULT_NOTES.toString())));
     }
-    
+
     @Test
     @Transactional
     public void getPoints() throws Exception {

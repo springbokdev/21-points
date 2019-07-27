@@ -2,7 +2,10 @@ package space.springbok.health.web.rest;
 
 import space.springbok.health.domain.Points;
 import space.springbok.health.repository.PointsRepository;
+import space.springbok.health.repository.UserRepository;
 import space.springbok.health.repository.search.PointsSearchRepository;
+import space.springbok.health.security.AuthoritiesConstants;
+import space.springbok.health.security.SecurityUtils;
 import space.springbok.health.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
@@ -32,8 +35,6 @@ import java.util.stream.StreamSupport;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
- * TODO change this class according to page 32
- *
  * REST controller for managing {@link space.springbok.health.domain.Points}.
  */
 @RestController
@@ -51,9 +52,12 @@ public class PointsResource {
 
     private final PointsSearchRepository pointsSearchRepository;
 
-    public PointsResource(PointsRepository pointsRepository, PointsSearchRepository pointsSearchRepository) {
+    private final UserRepository userRepository;
+
+    public PointsResource(PointsRepository pointsRepository, PointsSearchRepository pointsSearchRepository, UserRepository userRepository) {
         this.pointsRepository = pointsRepository;
         this.pointsSearchRepository = pointsSearchRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -69,6 +73,12 @@ public class PointsResource {
         if (points.getId() != null) {
             throw new BadRequestAlertException("A new points cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        if (!SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            log.debug("No user passed in, using current user: {}", SecurityUtils.getCurrentUserLogin());
+            points.setUser(userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin().get()).get());
+        }
+
         Points result = pointsRepository.save(points);
         pointsSearchRepository.save(result);
         return ResponseEntity.created(new URI("/api/points/" + result.getId()))
@@ -101,15 +111,23 @@ public class PointsResource {
     /**
      * {@code GET  /points} : get all the points.
      *
-     * @param pageable the pagination information.
+     * @param pageable    the pagination information.
      * @param queryParams a {@link MultiValueMap} query parameters.
-     * @param uriBuilder a {@link UriComponentsBuilder} URI builder.
+     * @param uriBuilder  a {@link UriComponentsBuilder} URI builder.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of points in body.
      */
     @GetMapping("/points")
-    public ResponseEntity<List<Points>> getAllPoints(Pageable pageable, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<List<Points>> getAllPoints(Pageable pageable, @RequestParam MultiValueMap<String, String> queryParams,
+        UriComponentsBuilder uriBuilder) {
         log.debug("REST request to get a page of Points");
-        Page<Points> page = pointsRepository.findAll(pageable);
+        Page<Points> page;
+
+        if (SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.ADMIN)) {
+            page = pointsRepository.findAllByOrderByDateDesc(pageable);
+        } else {
+            page = pointsRepository.findByUserIsCurrentUser(pageable);
+        }
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -145,14 +163,15 @@ public class PointsResource {
      * {@code SEARCH  /_search/points?query=:query} : search for the points corresponding
      * to the query.
      *
-     * @param query the query of the points search.
-     * @param pageable the pagination information.
+     * @param query       the query of the points search.
+     * @param pageable    the pagination information.
      * @param queryParams a {@link MultiValueMap} query parameters.
-     * @param uriBuilder a {@link UriComponentsBuilder} URI builder.
+     * @param uriBuilder  a {@link UriComponentsBuilder} URI builder.
      * @return the result of the search.
      */
     @GetMapping("/_search/points")
-    public ResponseEntity<List<Points>> searchPoints(@RequestParam String query, Pageable pageable, @RequestParam MultiValueMap<String, String> queryParams, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<List<Points>> searchPoints(@RequestParam String query, Pageable pageable, @RequestParam MultiValueMap<String, String> queryParams,
+        UriComponentsBuilder uriBuilder) {
         log.debug("REST request to search for a page of Points for query {}", query);
         Page<Points> page = pointsSearchRepository.search(queryStringQuery(query), pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(uriBuilder.queryParams(queryParams), page);
